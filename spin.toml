@@ -12,13 +12,9 @@ mstdn_url = { required = true }
 mstdn_access_token = { required = true, secret = true }
 weighted_countries = { required = true }
 
-#[[trigger.http]]
-#route = "/..."
-#component = "random-cafe"
-
-[[trigger.cron]]
+[[trigger.http]]
+route = "/..."
 component = "random-cafe"
-cron_expression = "1/2 * * * * *"
 
 [component.random-cafe]
 source = "target/wasm32-wasi/release/random_cafe.wasm"

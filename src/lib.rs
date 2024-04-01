@@ -32,16 +32,8 @@ struct Geopoint {
     population: Option<i64>,
 }
 
-#[cron_component]
-async fn foo(metadata: Metadata) -> Result<(), Error> {
-    println!("[{}] Hello from a cron component", metadata.timestamp);
-    handle_cron_event(metadata).await;
-    Ok(())
-}
-
-//#[http_component]
-//async fn handle_request(req: Request) -> anyhow::Result<impl IntoResponse> {
-async fn handle_cron_event(metadata: Metadata) -> Result<(), Error> {
+#[http_component]
+async fn handle_request(req: Request) -> anyhow::Result<impl IntoResponse> {
     let subscriber = FmtSubscriber::builder()
         .with_env_filter(EnvFilter::from_env("APP_LOG_LEVEL"))
         .finish();
@@ -62,12 +54,11 @@ async fn handle_cron_event(metadata: Metadata) -> Result<(), Error> {
     rr.mstd_media_ids = attached_medias;
     let _ = post_message(&rr).await;
 
-    //Ok(Response::builder()
-    //    .status(200)
-    //    .header("content-type", "text/plain")
-    //    .body("Hello, Fermyon")
-    //    .build())
-    Ok(())
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "text/plain")
+        .body("Hello, Fermyon")
+        .build())
 }
 
 // TODO: Reading this csv file everytime it gets request is expensive.
@@ -132,6 +123,7 @@ async fn search_nearby(r: &mut Restaurant) -> Result<()> {
     );
 
     let resp: Response = spin_sdk::http::send(Request::get(url)).await.unwrap();
+
     let body = resp.body();
     let body_json: Value = serde_json::from_slice(&body).unwrap();
 
